@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/cespedes/tesla-api/api"
 )
 
 func main() {
@@ -15,10 +18,11 @@ func main() {
 }
 
 func run(args []string) error {
-	flag := flag.NewFlagSet("tesla-cli", flag.ExitOnError)
+	flag := flag.NewFlagSet("tesla-api", flag.ExitOnError)
 	var flags struct {
 		// General flags
 		Debug bool
+		NoOp  bool
 
 		// How to get token:
 		EncryptionKey          string // Used in TeslamateSqlURI and TeslamateToken
@@ -30,6 +34,7 @@ func run(args []string) error {
 	var err error
 
 	flag.BoolVar(&flags.Debug, "debug", false, "debugging info")
+	flag.BoolVar(&flags.NoOp, "n", false, "no operation")
 	flag.StringVar(&flags.EncryptionKey, "encryption-key", "", "key to decrypt access token")
 	flag.StringVar(&flags.TeslamateDockerCompose, "teslamate-docker-compose", "", "path to Teslamate's \"docker-compose.yml\"")
 	flag.StringVar(&flags.TeslamateSqlURI, "sql-uri", "", "connection string to Teslamate's PostgreSQL")
@@ -97,10 +102,32 @@ func run(args []string) error {
 	if flags.Token == "" {
 		return fmt.Errorf("no token to use")
 	}
-	fmt.Println("Will connect to Tesla...")
-	err = teslaCli(flags.Token, flag.Args())
+	if flags.NoOp {
+		fmt.Println("NoOp: will *not* connect to Tesla.")
+		return nil
+	}
+	args = flag.Args()
+	if len(args) < 2 {
+		fmt.Fprintln(os.Stderr, "Usage: tesla-api [options] <method> <url> [<data>]")
+		os.Exit(1)
+	}
+	if flags.Debug {
+		fmt.Println("Will connect to Tesla...")
+	}
+
+	api, err := api.New("https://owner-api.teslamotors.com", flags.Token)
 	if err != nil {
 		return fmt.Errorf("tesla: %w", err)
 	}
+	var dest any
+	err = api.Request(args[0], args[1], nil, &dest)
+	if err != nil {
+		return fmt.Errorf("api.Request: %w", err)
+	}
+	out, err := json.Marshal(dest)
+	if err != nil {
+		return fmt.Errorf("json response: %w", err)
+	}
+	fmt.Println(string(out))
 	return nil
 }
