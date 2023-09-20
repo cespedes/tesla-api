@@ -11,6 +11,8 @@ If you use `teslamate`, the access token can be obtained automatically from its
 database; this is handled automatically if you provide the `docker-compose` file, or if
 it is found in the current directory.
 
+Sending data with a third argument does not work yet.
+
 Usage examples:
 
 - `tesla-api GET /api/1/users/me`
@@ -20,11 +22,11 @@ Usage examples:
 - `tesla-api GET /api/1/vehicles/929653650881721/nearby_charging_sites`
 - `tesla-api GET /api/1/vehicles/929653650881721/release_notes`
 - `tesla-api POST /api/1/vehicles/{id}/wake_up`
-- `tesla-api POST /api/1/vehicles/{id}/honk_horn`
-- `tesla-api POST /api/1/vehicles/{id}/flash_lights`
-- `tesla-api POST /api/1/vehicles/{id}/remote_start_drive`
-- `tesla-api POST /api/1/vehicles/{id}/door_unlock`
-- `tesla-api POST /api/1/vehicles/{id}/door_lock`
-- `tesla-api POST /api/1/vehicles/{id}/actuate_trunk '{"which": "rear"}`
-- `tesla-api POST /api/1/vehicles/{id}/window_control '{"command": "close", "lat": 0, "lon": 0}`
+- `tesla-api POST /api/1/vehicles/{id}/command/honk_horn`
+- `tesla-api POST /api/1/vehicles/{id}/command/flash_lights`
+- `tesla-api POST /api/1/vehicles/{id}/command/remote_start_drive`
+- `tesla-api POST /api/1/vehicles/{id}/command/door_unlock`
+- `tesla-api POST /api/1/vehicles/{id}/command/door_lock`
+- `tesla-api POST /api/1/vehicles/{id}/command/actuate_trunk '{"which": "rear"}`
+- `tesla-api POST /api/1/vehicles/{id}/command/window_control '{"command": "close", "lat": 0, "lon": 0}`
 
