@@ -107,7 +107,7 @@ func run(args []string) error {
 		return nil
 	}
 	args = flag.Args()
-	if len(args) < 2 {
+	if len(args) < 2 || len(args) > 3 {
 		fmt.Fprintln(os.Stderr, "Usage: tesla-api [options] <method> <url> [<data>]")
 		os.Exit(1)
 	}
@@ -120,7 +120,11 @@ func run(args []string) error {
 		return fmt.Errorf("tesla: %w", err)
 	}
 	var dest any
-	err = api.Request(args[0], args[1], nil, &dest)
+	var data []byte
+	if len(args) == 3 {
+		data = []byte(args[2])
+	}
+	err = api.Request(args[0], args[1], data, &dest)
 	if err != nil {
 		return fmt.Errorf("api.Request: %w", err)
 	}

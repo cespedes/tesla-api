@@ -23,6 +23,7 @@ func (A *API) Request(method, url string, data []byte, dest any) error {
 		return err
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", A.apiToken))
+	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
